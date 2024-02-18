@@ -1,0 +1,84 @@
+# Switch Vlan Configuration #
+
+Switch>en
+Switch#conf t
+Enter configuration commands, one per line.  End with CNTL/Z.
+Switch(config)#vlan 10
+Switch(config-vlan)#vlan 20
+Switch(config-vlan)#vlan 30
+Switch(config-vlan)#exit
+Switch(config)#int vlan 10
+Switch(config-if)#ip add 192.168.10.100 255.255.255.0
+Switch(config-if)#no shu
+Switch(config-if)#int vlan 20                        
+Switch(config-if)#ip add 192.168.20.100 255.255.255.0
+Switch(config-if)#no shu
+Switch(config-if)#int vlan 30                            
+Switch(config-if)#ip add 192.168.30.100 255.255.255.0
+Switch(config-if)#no shu
+
+# Assign Vlan To Interfaces
+
+Switch(config)#int rang g0/0-1
+Switch(config-if-range)#switchport mode access 
+Switch(config-if-range)#switchport access vlan 10
+Switch(config-if-range)#exit
+Switch(config)#int g0/2
+Switch(config-if)#switchport access vlan 20
+Switch(config-if)#exit
+Switch(config)#int g0/3
+Switch(config-if)#switchport access vlan 30
+Switch(config-if)#end
+Switch#wr m
+
+
+# Enable Routing
+
+Switch(config)#ip routing
+
+
+# Fortigate configuration #
+
+FortiGate-VM64-KVM login: admin
+Password: 
+Welcome!
+
+FortiGate-VM64-KVM # config system global 
+
+FortiGate-VM64-KVM (global) # set hostname FGT
+
+FortiGate-VM64-KVM (global) # end
+
+# Interfaces Configuration
+
+FGT # config system interface 
+
+FGT (interface) # edit port1 
+
+FGT (port1) # set mode static 
+
+FGT (port1) # set ip 192.168.10.1/24
+
+FGT (port1) # set allowaccess http ping ssh 
+
+FGT (port1) # set role lan 
+
+FGT (port1) # set alias LAN
+
+FGT (port1) # end
+
+
+# Add Static Routes To other Vlans
+
+config router static
+    edit 2
+        set dst 192.168.20.0 255.255.255.0
+        set gateway 192.168.10.100
+        set device "port1"
+    next
+    edit 3
+        set dst 192.168.30.0 255.255.255.0
+        set gateway 192.168.10.100
+        set device "port1"
+    next
+end
