@@ -1,0 +1,12 @@
+# Configuration
+
+config system interface
+    edit "REDUNDANT"
+        set vdom "root"
+        set ip 192.168.10.q 255.255.255.0
+        set allowaccess ping
+        set type redundant
+        set member "port9" "port10"
+        set role lan
+    next
+end
